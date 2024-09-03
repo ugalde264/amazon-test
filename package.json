@@ -1,0 +1,21 @@
+{
+  "name": "amazon-test",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "start": "nodemon"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "chai": "^5.1.1",
+    "mocha": "^10.7.3",
+    "nodemon": "^3.1.4",
+    "prettier": "^3.3.3",
+    "puppeteer": "^23.2.1"
+  }
+}
