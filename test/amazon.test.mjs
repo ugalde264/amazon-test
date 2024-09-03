@@ -15,7 +15,7 @@ describe('Amazon Tests', function() {
         await browser.close();
     });
 
-    it('should navigate to AmazonBasics and verify the element by text', async () => {
+    it('texto', async () => {
         await page.goto('https://www.amazon.com.mx');
         await page.click('a[href="/stores/node/12273534011/?field-lbr_brands_browse-bin=Amazon+Basics&ref_=nav_cs_amazonbasics"]');
         await page.waitForSelector('#Header-uigx25zsn6 > div > div > div.Hero__hero__Oz7Jk > img'); 
@@ -23,7 +23,7 @@ describe('Amazon Tests', function() {
         expect(element).to.not.be.null;
     });
 
-    it('should navigate to AmazonBasics and verify the element by CSS selector', async () => {
+    it('CSS', async () => {
         await page.goto('https://www.amazon.com.mx');
         await page.click('#nav-xshop > a:nth-child(11)'); 
         await page.waitForSelector('#nav-xshop > a:nth-child(11)');
@@ -31,12 +31,12 @@ describe('Amazon Tests', function() {
         expect(element).to.not.be.null;
     });
 
-    it('should navigate to AmazonBasics and verify the element by XPath', async () => {
+    it('XPATH', async () => {
         await page.goto('https://www.amazon.com.mx');
         const [link] = await page.$x('//*[@id="nav-xshop"]/a[10]'); 
         await link.click();
-        await page.waitForSelector('selector-de-tu-elemento'); 
-        const element = await page.$('selector-de-tu-elemento');
+        await page.waitForSelector('//*[@id="Header-uigx25zsn6"]/div/div/div[1]/img'); 
+        const element = await page.$('//*[@id="Header-uigx25zsn6"]/div/div/div[1]/img');
         expect(element).to.not.be.null;
     });
 });
