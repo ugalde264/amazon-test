@@ -1,42 +1,49 @@
 import puppeteer from 'puppeteer';
 import { expect } from 'chai';
 
-describe('Amazon Tests', function() {
-    this.timeout(10000); 
+describe('test', function () {
+  this.timeout(30000); 
 
-    let browser, page;
+  describe('Prueba de compra en Forever 21', () => {
+    let browser;
+    let page;
+    let precioProducto;
 
     before(async () => {
-        browser = await puppeteer.launch({ headless: true });
-        page = await browser.newPage();
+      browser = await puppeteer.launch({ headless: false });
+      page = await browser.newPage();
     });
 
     after(async () => {
-        await browser.close();
+      await browser.close();
     });
 
-    it('texto', async () => {
-        await page.goto('https://www.amazon.com.mx');
-        await page.click('a[href="/stores/node/12273534011/?field-lbr_brands_browse-bin=Amazon+Basics&ref_=nav_cs_amazonbasics"]');
-        await page.waitForSelector('#Header-uigx25zsn6 > div > div > div.Hero__hero__Oz7Jk > img'); 
-        const element = await page.$('#Header-uigx25zsn6 > div > div > div.Hero__hero__Oz7Jk > img');
-        expect(element).to.not.be.null;
-    });
+    it('Debe agregar un producto al carrito y verificar el precio', async () => {
+      // Navegar a Forever 21 
+      await page.goto('https://forever21.com.mx/', { timeout: 30000 });
 
-    it('CSS', async () => {
-        await page.goto('https://www.amazon.com.mx');
-        await page.click('#nav-xshop > a:nth-child(11)'); 
-        await page.waitForSelector('#nav-xshop > a:nth-child(11)');
-        const element = await page.$('#nav-xshop > a:nth-child(11)');
-        expect(element).to.not.be.null;
-    });
+      // Esperar a que los productos destacados aparezcan
+      await page.waitForSelector('.image__img');
 
-    it('XPATH', async () => {
-        await page.goto('https://www.amazon.com.mx');
-        const [link] = await page.$x('//*[@id="nav-xshop"]/a[10]'); 
-        await link.click();
-        await page.waitForSelector('//*[@id="Header-uigx25zsn6"]/div/div/div[1]/img'); 
-        const element = await page.$('//*[@id="Header-uigx25zsn6"]/div/div/div[1]/img');
-        expect(element).to.not.be.null;
+      // Seleccionar un producto aleatorio y obtener su precio
+      const productos = await page.$$('.featured-collection-slider__product .product-item__image img');
+      const productoAleatorio = productos[Math.floor(Math.random() * productos.length)];
+      await productoAleatorio.click();
+      await page.waitForNavigation();
+      precioProducto = await productoAleatorio.evaluate(el => {
+        const precioElement = el.closest('.product__chip selected dynamic-variant-button').querySelector('.data-price');
+        return parseFloat(precioElement.textContent.replace(/[^0-9.,]/g, '').replace(',', '.'));
+      });
+
+      // Agregar al carrito y navegar al carrito
+      await page.click('.button.product-form__cart-submit');
+      await page.click('a.header__icon-touch.header__icon-touch--cart');
+
+      // Obtener el precio del carrito y comparar
+      const precioCarrito = await page.$eval('#shopify-section-sections--16036153262262__quick-cart .quick-cart__footer-subtotal span', el =>
+        parseFloat(el.textContent.replace(/[^0-9.,]/g, '').replace(',', '.'))
+      );
+      expect(precioCarrito).to.equal(precioProducto);
     });
+  });
 });
